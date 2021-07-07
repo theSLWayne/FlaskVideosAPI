@@ -54,10 +54,13 @@ class Video(Resource):
         db.session.commit()
         return video, 201
 
-    '''def delete(self, video_id):
-        
-        del videos[video_id]
-        return '', 204'''
+    def delete(self, video_id):
+        result = VideoModel.query.filter_by(id = video_id).first()
+        if not result:
+            abort(404, message = 'Video for id:{} does not exist.'.format(video_id))
+        db.session.delete(result)
+        db.session.commit()
+        return '', 204
 
 class Videos(Resource):
     @marshal_with(resource_fields)
