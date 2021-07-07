@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videodatabase.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
 class VideoModel(db.Model):
@@ -58,7 +59,14 @@ class Video(Resource):
         del videos[video_id]
         return '', 204'''
 
+class Videos(Resource):
+    @marshal_with(resource_fields)
+    def get(self):
+        results = VideoModel.query.order_by(VideoModel.id).all()
+        return results, 200
+
 api.add_resource(Video, '/video/<int:video_id>')
+api.add_resource(Videos, '/videos')
 
 if __name__ == '__main__':
     app.run(debug = True)
