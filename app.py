@@ -23,9 +23,9 @@ db.create_all()
 
 put_args = reqparse.RequestParser()
 put_args.add_argument('name', type = str, required = True, help = 'Name of the video is required')
-put_args.add_argument('views', type = int, help = 'Number of views')
+put_args.add_argument('views', type = int, required = True, help = 'Number of views')
 put_args.add_argument('uploader', type = str, required = True, help = 'Uploader of the video is required')
-put_args.add_argument('likes', type = int, help = 'Number of likes')
+put_args.add_argument('likes', type = int, required = True, help = 'Number of likes')
 
 resource_fields = {
     'id': fields.String,
@@ -64,6 +64,14 @@ class Videos(Resource):
     def get(self):
         results = VideoModel.query.order_by(VideoModel.id).all()
         return results, 200
+
+    @marshal_with(resource_fields)
+    def post(self):
+        args = put_args.parse_args()
+        video = VideoModel(name = args['name'], uploader = args['uploader'], views = args['views'], likes = args['likes'])
+        db.session.add(video)
+        db.session.commit()
+        return video, 201
 
 api.add_resource(Video, '/video/<int:video_id>')
 api.add_resource(Videos, '/videos')
