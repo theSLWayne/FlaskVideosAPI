@@ -21,11 +21,17 @@ class VideoModel(db.Model):
 # Database creation - Only need to run it after models are created.
 db.create_all()
 
+post_args = reqparse.RequestParser()
+post_args.add_argument('name', type = str, required = True, help = 'Name of the video is required')
+post_args.add_argument('views', type = int, required = True, help = 'Number of views')
+post_args.add_argument('uploader', type = str, required = True, help = 'Uploader of the video is required')
+post_args.add_argument('likes', type = int, required = True, help = 'Number of likes')
+
 put_args = reqparse.RequestParser()
-put_args.add_argument('name', type = str, required = True, help = 'Name of the video is required')
-put_args.add_argument('views', type = int, required = True, help = 'Number of views')
-put_args.add_argument('uploader', type = str, required = True, help = 'Uploader of the video is required')
-put_args.add_argument('likes', type = int, required = True, help = 'Number of likes')
+put_args.add_argument('name', type = str, help = 'Name of the video')
+put_args.add_argument('views', type = int, help = 'Number of views')
+put_args.add_argument('uploader', type = str, help = 'Uploader of the video')
+put_args.add_argument('likes', type = int, help = 'Number of likes')
 
 resource_fields = {
     'id': fields.String,
@@ -47,12 +53,18 @@ class Video(Resource):
     def put(self, video_id):
         args = put_args.parse_args()
         result = VideoModel.query.filter_by(id = video_id).first()
-        if result:
-            abort(409, message = 'A video from that ID already exists.')
-        video = VideoModel(id = video_id, name = args['name'], uploader = args['uploader'], views = args['views'], likes = args['likes'])
-        db.session.add(video)
+        if not result:
+            abort(404, message = 'Video for id:{} does not exist.'.format(video_id))
+        if args['name'] is not None:
+            result.name = args['name']
+        if args['views'] is not None:
+            result.views = args['views']
+        if args['uploader'] is not None:
+            result.uploader = args['uploader']
+        if args['likes'] is not None:
+            result.likes = args['likes']
         db.session.commit()
-        return video, 201
+        return result, 201
 
     def delete(self, video_id):
         result = VideoModel.query.filter_by(id = video_id).first()
@@ -70,7 +82,7 @@ class Videos(Resource):
 
     @marshal_with(resource_fields)
     def post(self):
-        args = put_args.parse_args()
+        args = post_args.parse_args()
         video = VideoModel(name = args['name'], uploader = args['uploader'], views = args['views'], likes = args['likes'])
         db.session.add(video)
         db.session.commit()
