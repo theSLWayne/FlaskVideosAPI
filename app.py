@@ -47,6 +47,8 @@ class Video(Resource):
         result = VideoModel.query.filter_by(id = video_id).first()
         if not result:
             abort(404, message = 'Video for id:{} does not exist.'.format(video_id))
+        result.views += 1
+        db.session.commit()
         return result
 
     @marshal_with(resource_fields)
