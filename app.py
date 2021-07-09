@@ -68,6 +68,11 @@ user_put_args.add_argument('user_name', type = str, help = 'Name of the user')
 user_put_args.add_argument('user_email', type = str, help = 'Email of the uploader')
 user_put_args.add_argument('user_password',type = str, help = 'Password of the uploader')
 
+user_post_args = reqparse.RequestParser()
+user_put_args.add_argument('user_name', type = str, required = True, help = 'Name of the user')
+user_put_args.add_argument('user_email', type = str, required = True, help = 'Email of the user')
+user_put_args.add_argument('user_password', type = str, required = True, help = 'User password')
+
 resource_fields_video = {
     'id': fields.String,
     'name': fields.String,
@@ -215,13 +220,28 @@ class User(Resource):
             abort(404, 'User {} does not exist'.format(user_id))
         db.session.delete(result)
         db.session.commit()
-        return '', 204    
+        return '', 204
+
+class Users(Resource):
+    @marshal_with(resource_fields_user)
+    def get(self):
+        results = UserModel.order_by(UserModel.user_id).all()
+        return results, 200
+
+    @marshal_with(resource_fields_user)
+    def post(self):
+        args = user_post_args.parse_args()
+        user = UserModel(user_name = args['user_name'], user_email = args['user_email'], user_password = args['user_password'])
+        db.session.add(user)
+        db.session.commit()
+        return user, 201
 
 api.add_resource(Video, '/video/<int:video_id>')
 api.add_resource(Videos, '/videos')
 api.add_resource(Uploader, '/uploader/<int:uploader_id>')
 api.add_resource(Uploaders, '/uploaders')
 api.add_resource(User, '/user/<int:user_id>')
+api.add_resource(Users, '/users')
 
 if __name__ == '__main__':
     app.run(debug = True)
