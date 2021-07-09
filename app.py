@@ -41,19 +41,24 @@ class UserModel(db.Model):
 # Database creation - Only need to run it after models are created.
 db.create_all()
 
-post_args = reqparse.RequestParser()
-post_args.add_argument('name', type = str, required = True, help = 'Name of the video is required')
-post_args.add_argument('views', type = int, required = True, help = 'Number of views')
-post_args.add_argument('uploader', type = str, required = True, help = 'Uploader of the video is required')
-post_args.add_argument('likes', type = int, required = True, help = 'Number of likes')
+video_post_args = reqparse.RequestParser()
+video_post_args.add_argument('name', type = str, required = True, help = 'Name of the video is required')
+video_post_args.add_argument('views', type = int, required = True, help = 'Number of views')
+video_post_args.add_argument('uploader', type = str, required = True, help = 'Uploader of the video is required')
+video_post_args.add_argument('likes', type = int, required = True, help = 'Number of likes')
 
-put_args = reqparse.RequestParser()
-put_args.add_argument('name', type = str, help = 'Name of the video')
-put_args.add_argument('views', type = int, help = 'Number of views')
-put_args.add_argument('uploader', type = str, help = 'Uploader of the video')
-put_args.add_argument('likes', type = int, help = 'Number of likes')
+video_put_args = reqparse.RequestParser()
+video_put_args.add_argument('name', type = str, help = 'Name of the video')
+video_put_args.add_argument('views', type = int, help = 'Number of views')
+video_put_args.add_argument('uploader', type = str, help = 'Uploader of the video')
+video_put_args.add_argument('likes', type = int, help = 'Number of likes')
 
-resource_fields = {
+uploader_put_args = reqparse.RequestParser()
+uploader_put_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader is required')
+uploader_put_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader is required')
+uploader_put_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password is required')
+
+resource_fields_video = {
     'id': fields.String,
     'name': fields.String,
     'uploader': fields.String,
@@ -61,8 +66,24 @@ resource_fields = {
     'likes': fields.Integer
 }
 
+resource_fields_uploader = {
+    'uploader_id': fields.String,
+    'uploader_name': fields.String,
+    'uploader_videos': fields.String,
+    'uploader_email': fields.String,
+    'uploader_password': fields.String
+}
+
+resource_fields_user = {
+    'user_id': fields.String,
+    'user_name': fields.String,
+    'user_emali': fields.String,
+    'user_password': fields.String,
+    'user_watched_videos': fields.String
+}
+
 class Video(Resource):
-    @marshal_with(resource_fields)
+    @marshal_with(resource_fields_video)
     def get(self, video_id):
         result = VideoModel.query.filter_by(id = video_id).first()
         if not result:
@@ -71,9 +92,9 @@ class Video(Resource):
         db.session.commit()
         return result
 
-    @marshal_with(resource_fields)
+    @marshal_with(resource_fields_video)
     def put(self, video_id):
-        args = put_args.parse_args()
+        args = video_put_args.parse_args()
         result = VideoModel.query.filter_by(id = video_id).first()
         if not result:
             abort(404, message = 'Video for id:{} does not exist.'.format(video_id))
@@ -97,21 +118,53 @@ class Video(Resource):
         return '', 204
 
 class Videos(Resource):
-    @marshal_with(resource_fields)
+    @marshal_with(resource_fields_video)
     def get(self):
         results = VideoModel.query.order_by(VideoModel.id).all()
         return results, 200
 
-    @marshal_with(resource_fields)
+    @marshal_with(resource_fields_video)
     def post(self):
-        args = post_args.parse_args()
+        args = video_post_args.parse_args()
         video = VideoModel(name = args['name'], uploader = args['uploader'], views = args['views'], likes = args['likes'])
         db.session.add(video)
         db.session.commit()
         return video, 201
 
+class Uploader(Resource):
+    @marshal_with(resource_fields_uploader)
+    def get(self, uploader_id):
+        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        if not result:
+            abort(404, 'Uploader {} does not exist'.format(uploader_id))
+        return result
+
+    @marshal_with(resource_fields_uploader)
+    def put(self, uploader_id):
+        args = uploader_put_args.parse_args()
+        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        if not result:
+            abort(404, 'Uploader {} does not exist'. format(uploader_id))
+        if args['uploader_name']:
+            result.uploader_name = args['uploader_name']
+        if args['uploader_email']:
+            result.uploader_email = args['uploader_email']
+        if args['uploader_password']:
+            result.uploader_passord = args['uploader_password']
+        db.session.commit()
+        return result
+
+    def delete(self, uploader_id):
+        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        if not result:
+            abort(404, 'Uploader {} does not exist'.format(uploader_id))
+        db.session.delete(result)
+        db.session.commit()
+        return '', 204
+
 api.add_resource(Video, '/video/<int:video_id>')
 api.add_resource(Videos, '/videos')
+api.add_resource(Uploader, '/uploader')
 
 if __name__ == '__main__':
     app.run(debug = True)
