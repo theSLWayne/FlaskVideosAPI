@@ -18,6 +18,26 @@ class VideoModel(db.Model):
     def __repr__(self):
         return '<Video \nName: {} \nUploader: {} \nViews: {} \nLikes: {}\n>'.format(self.name, self.uploader, self.views, self.likes)
 
+class UploaderModel(db.Model):
+    uploader_id = db.Column(db.Integer, primary_key = True)
+    uploader_name = db.Column(db.String(20), nullable = False)
+    uploader_videos = db.Column(db.String(400), nullable = False)
+    uploader_email = db.Column(db.String(15), nullable = False)
+    uploader_password = db.Column(db.String(15), nullable = False)
+
+    def __repr__(self):
+        return '<Uploader \nName: {} \nEmail: {}\n>'.format(self.uploader_name, self.uploader_email)
+
+class UserModel(db.Model):
+    user_id = db.Column(db.Integer, primary_key = True)
+    user_name = db.Column(db.String(20), nullable = False)
+    user_email = db.Column(db.String(15), nullable = False)
+    user_password = db.Column(db.String(15), nullable = False)
+    user_watched_videos = db.Column(db.String(400), nullable = False)
+
+    def __repr__(self):
+        return '<User \nName: {} \nEmail: {}\n>'.format(self.user_name, self.user_email)
+
 # Database creation - Only need to run it after models are created.
 db.create_all()
 
