@@ -21,7 +21,7 @@ class VideoModel(db.Model):
 class UploaderModel(db.Model):
     uploader_id = db.Column(db.Integer, primary_key = True)
     uploader_name = db.Column(db.String(20), nullable = False)
-    uploader_videos = db.Column(db.String(400), nullable = False)
+    uploader_videos = db.Column(db.String(400), nullable = True)
     uploader_email = db.Column(db.String(15), nullable = False)
     uploader_password = db.Column(db.String(15), nullable = False)
 
@@ -33,7 +33,7 @@ class UserModel(db.Model):
     user_name = db.Column(db.String(20), nullable = False)
     user_email = db.Column(db.String(15), nullable = False)
     user_password = db.Column(db.String(15), nullable = False)
-    user_watched_videos = db.Column(db.String(400), nullable = False)
+    user_watched_videos = db.Column(db.String(400), nullable = True)
 
     def __repr__(self):
         return '<User \nName: {} \nEmail: {}\n>'.format(self.user_name, self.user_email)
@@ -57,6 +57,11 @@ uploader_put_args = reqparse.RequestParser()
 uploader_put_args.add_argument('uploader_name', type = str, help = 'Name of the uploader')
 uploader_put_args.add_argument('uploader_email', type = str, help = 'Email of the uploader')
 uploader_put_args.add_argument('uploader_password', type = str, help = 'Uploader password')
+
+uploader_post_args = reqparse.RequestParser()
+uploader_put_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader')
+uploader_put_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader')
+uploader_put_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password')
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument('user_name', type = str, help = 'Name of the user')
@@ -167,6 +172,20 @@ class Uploader(Resource):
         db.session.commit()
         return '', 204
 
+class Uploaders(Resource):
+    @marshal_with(resource_fields_uploader)
+    def get(self):
+        results = UploaderModel.order_by(UploaderModel.uploader_id).all()
+        return results, 200
+
+    @marshal_with(resource_fields_uploader)
+    def post(self):
+        args = uploader_post_args.parse_args()
+        uploader = UploaderModel(uploader_name = args['uploader_name'], uploader_email = args['uploader_email'], uploader_password = args['uploader_password'])
+        db.session.add(uploader)
+        db.session.commit()
+        return uploader, 201
+
 class User(Resource):
     @marshal_with(resource_fields_user)
     def get(self, user_id):
@@ -201,6 +220,7 @@ class User(Resource):
 api.add_resource(Video, '/video/<int:video_id>')
 api.add_resource(Videos, '/videos')
 api.add_resource(Uploader, '/uploader/<int:uploader_id>')
+api.add_resource(Uploaders, '/uploaders')
 api.add_resource(User, '/user/<int:user_id>')
 
 if __name__ == '__main__':
