@@ -54,9 +54,14 @@ video_put_args.add_argument('uploader', type = str, help = 'Uploader of the vide
 video_put_args.add_argument('likes', type = int, help = 'Number of likes')
 
 uploader_put_args = reqparse.RequestParser()
-uploader_put_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader is required')
-uploader_put_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader is required')
-uploader_put_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password is required')
+uploader_put_args.add_argument('uploader_name', type = str, help = 'Name of the uploader')
+uploader_put_args.add_argument('uploader_email', type = str, help = 'Email of the uploader')
+uploader_put_args.add_argument('uploader_password', type = str, help = 'Uploader password')
+
+user_put_args = reqparse.RequestParser()
+user_put_args.add_argument('user_name', type = str, help = 'Name of the user')
+user_put_args.add_argument('user_email', type = str, help = 'Email of the uploader')
+user_put_args.add_argument('user_password',type = str, help = 'Password of the uploader')
 
 resource_fields_video = {
     'id': fields.String,
@@ -162,9 +167,41 @@ class Uploader(Resource):
         db.session.commit()
         return '', 204
 
+class User(Resource):
+    @marshal_with(resource_fields_user)
+    def get(self, user_id):
+        result = UserModel.query.filter_by(id = user_id).first()
+        if not result:
+            abort(404, 'User {} does not exist'.format(user_id))
+        return result
+
+    @marshal_with(resource_fields_user)
+    def put(self, user_id):
+        args = user_put_args.parse_args()
+        result = UserModel.query.filter_by(id = user_id).first()
+        if not result:
+            abort(404, 'User {} does not exist'. format(user_id))
+        if args['user_name']:
+            result.user_name = args['user_name']
+        if args['user_email']:
+            result.user_email = args['user_email']
+        if args['user_password']:
+            result.user_passord = args['user_password']
+        db.session.commit()
+        return result
+
+    def delete(self, user_id):
+        result = UserModel.query.filter_by(id = user_id).first()
+        if not result:
+            abort(404, 'User {} does not exist'.format(user_id))
+        db.session.delete(result)
+        db.session.commit()
+        return '', 204    
+
 api.add_resource(Video, '/video/<int:video_id>')
 api.add_resource(Videos, '/videos')
-api.add_resource(Uploader, '/uploader')
+api.add_resource(Uploader, '/uploader/<int:uploader_id>')
+api.add_resource(User, '/user/<int:user_id>')
 
 if __name__ == '__main__':
     app.run(debug = True)
