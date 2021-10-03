@@ -1,12 +1,14 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
+from flask_httpauth import HTTPDigestAuth
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videodatabase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
+auth = HTTPDigestAuth()
 
 class VideoModel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
