@@ -7,9 +7,9 @@ A simple video API created with Python Flask framework
 1. [Introduction](#introduction)
 2. [Setup](#setup)
 3. [Run Script](#run)
-4. [Endpoints]
+4. [Endpoints](#endpoints)
 5. [Authentiation[WIP]]
-5. [Test]
+5. [Test[WIP]]
 
 ## 1. Introduction <a name="introduction"></a>
 
@@ -110,3 +110,40 @@ Notice: **You should activate the virtual environment prior to running this scri
 - Press `CTRL+C` to stop the server.
 
 Notice: **This server is a development server hence shouldn't be used in a production environment.**
+
+## 4. Endpoints <a name="endpoints"></a>
+
+| Endpoint | Description |
+|----------|-------------|
+| `/video/<video_id>` | Single video denoted by the parsed ID |
+| `/videos` | All videos |
+| `/uploader/<uploader_id>` | Single uploader denoted by the parsed ID |
+| `/uploaders` | All uploaders |
+| `/user/<user_id>` | Single user denoted by parsed ID |
+| `/users` | All users |
+
+Below is a list of methods each endpoint will support and parameters of the video object.
+
+| Endpoint | Method | Required Parameters | Optional Parameters |
+|----------|--------|---------------------|---------------------|
+| `/video/<video_id>` | GET | None | None |
+| `/video/<video_id>` | PUT | None | name, views, uploader, likes |
+| `/video/<video_id>` | DELETE | None | None |
+| `/videos` | GET | None | None |
+| `/videos` | POST | name, views, uploader, likes | None |
+
+| Endpoint | Method | Required Parameters | Optional Parameters |
+|----------|--------|---------------------|---------------------|
+| `/uploader/<uploader_id>` | GET | None | None |
+| `/uploader/<uploader_id>` | PUT | None | uploader_name, uploader_email, uploader_password |
+| `/uploader/<uploader_id>` | DELETE | None | None |
+| `/uploaders` | GET | None | None |
+| `/uploaders` | POST | uploader_name, uploader_email, uploader_password | None |
+
+| Endpoint | Method | Required Parameters | Optional Parameters |
+|----------|--------|---------------------|---------------------|
+| `/user/<user_id>` | GET | None | None |
+| `/user/<user_id>` | PUT | None | user_name, user_email, user_password |
+| `/user/<user_id>` | DELETE | None | None |
+| `/users` | GET | None | None |
+| `/users` | POST | user_name, user_email, user_password | None |
