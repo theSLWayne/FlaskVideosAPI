@@ -8,8 +8,8 @@ A simple video API created with Python Flask framework
 2. [Setup](#setup)
 3. [Run Script](#run)
 4. [Endpoints](#endpoints)
-5. [Authentiation[WIP]]
-5. [Test[WIP]]
+5. [Authentiation[WIP]](#auth)
+6. [Test[WIP]](#test)
 
 ## 1. Introduction <a name="introduction"></a>
 
@@ -147,3 +147,11 @@ Below is a list of methods each endpoint will support and parameters of the vide
 | `/user/<user_id>` | DELETE | None | None |
 | `/users` | GET | None | None |
 | `/users` | POST | user_name, user_email, user_password | None |
+
+## 5. Authentication - [Work In Progress] <a name="auth"></a>
+
+Authentication will be available soon.
+
+## 6. Test - [Work In Progress] <a name="test"></a>
+
+A script to fully test the API will be available soon.
