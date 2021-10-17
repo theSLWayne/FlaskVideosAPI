@@ -151,7 +151,7 @@ class Videos(Resource):
 class Uploader(Resource):
     @marshal_with(resource_fields_uploader)
     def get(self, uploader_id):
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'.format(uploader_id))
         return result
@@ -159,7 +159,7 @@ class Uploader(Resource):
     @marshal_with(resource_fields_uploader)
     def put(self, uploader_id):
         args = uploader_put_args.parse_args()
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'. format(uploader_id))
         if args['uploader_name']:
@@ -172,7 +172,7 @@ class Uploader(Resource):
         return result
 
     def delete(self, uploader_id):
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'.format(uploader_id))
         db.session.delete(result)
@@ -196,7 +196,7 @@ class Uploaders(Resource):
 class User(Resource):
     @marshal_with(resource_fields_user)
     def get(self, user_id):
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'.format(user_id))
         return result
@@ -204,7 +204,7 @@ class User(Resource):
     @marshal_with(resource_fields_user)
     def put(self, user_id):
         args = user_put_args.parse_args()
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'. format(user_id))
         if args['user_name']:
@@ -217,7 +217,7 @@ class User(Resource):
         return result
 
     def delete(self, user_id):
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'.format(user_id))
         db.session.delete(result)
