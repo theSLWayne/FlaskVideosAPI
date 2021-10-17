@@ -182,7 +182,7 @@ class Uploader(Resource):
 class Uploaders(Resource):
     @marshal_with(resource_fields_uploader)
     def get(self):
-        results = UploaderModel.order_by(UploaderModel.uploader_id).all()
+        results = UploaderModel.query.order_by(UploaderModel.uploader_id).all()
         return results, 200
 
     @marshal_with(resource_fields_uploader)
@@ -227,7 +227,7 @@ class User(Resource):
 class Users(Resource):
     @marshal_with(resource_fields_user)
     def get(self):
-        results = UserModel.order_by(UserModel.user_id).all()
+        results = UserModel.query.order_by(UserModel.user_id).all()
         return results, 200
 
     @marshal_with(resource_fields_user)
