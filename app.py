@@ -61,9 +61,9 @@ uploader_put_args.add_argument('uploader_email', type = str, help = 'Email of th
 uploader_put_args.add_argument('uploader_password', type = str, help = 'Uploader password')
 
 uploader_post_args = reqparse.RequestParser()
-uploader_put_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader')
-uploader_put_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader')
-uploader_put_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password')
+uploader_post_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader')
+uploader_post_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader')
+uploader_post_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password')
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument('user_name', type = str, help = 'Name of the user')
@@ -71,9 +71,9 @@ user_put_args.add_argument('user_email', type = str, help = 'Email of the upload
 user_put_args.add_argument('user_password',type = str, help = 'Password of the uploader')
 
 user_post_args = reqparse.RequestParser()
-user_put_args.add_argument('user_name', type = str, required = True, help = 'Name of the user')
-user_put_args.add_argument('user_email', type = str, required = True, help = 'Email of the user')
-user_put_args.add_argument('user_password', type = str, required = True, help = 'User password')
+user_post_args.add_argument('user_name', type = str, required = True, help = 'Name of the user')
+user_post_args.add_argument('user_email', type = str, required = True, help = 'Email of the user')
+user_post_args.add_argument('user_password', type = str, required = True, help = 'User password')
 
 resource_fields_video = {
     'id': fields.String,
