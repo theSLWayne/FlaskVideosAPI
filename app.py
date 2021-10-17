@@ -61,9 +61,9 @@ uploader_put_args.add_argument('uploader_email', type = str, help = 'Email of th
 uploader_put_args.add_argument('uploader_password', type = str, help = 'Uploader password')
 
 uploader_post_args = reqparse.RequestParser()
-uploader_put_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader')
-uploader_put_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader')
-uploader_put_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password')
+uploader_post_args.add_argument('uploader_name', type = str, required = True, help = 'Name of the uploader')
+uploader_post_args.add_argument('uploader_email', type = str, required = True, help = 'Email of the uploader')
+uploader_post_args.add_argument('uploader_password', type = str, required = True, help = 'Uploader password')
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument('user_name', type = str, help = 'Name of the user')
@@ -71,9 +71,9 @@ user_put_args.add_argument('user_email', type = str, help = 'Email of the upload
 user_put_args.add_argument('user_password',type = str, help = 'Password of the uploader')
 
 user_post_args = reqparse.RequestParser()
-user_put_args.add_argument('user_name', type = str, required = True, help = 'Name of the user')
-user_put_args.add_argument('user_email', type = str, required = True, help = 'Email of the user')
-user_put_args.add_argument('user_password', type = str, required = True, help = 'User password')
+user_post_args.add_argument('user_name', type = str, required = True, help = 'Name of the user')
+user_post_args.add_argument('user_email', type = str, required = True, help = 'Email of the user')
+user_post_args.add_argument('user_password', type = str, required = True, help = 'User password')
 
 resource_fields_video = {
     'id': fields.String,
@@ -151,7 +151,7 @@ class Videos(Resource):
 class Uploader(Resource):
     @marshal_with(resource_fields_uploader)
     def get(self, uploader_id):
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'.format(uploader_id))
         return result
@@ -159,7 +159,7 @@ class Uploader(Resource):
     @marshal_with(resource_fields_uploader)
     def put(self, uploader_id):
         args = uploader_put_args.parse_args()
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'. format(uploader_id))
         if args['uploader_name']:
@@ -172,7 +172,7 @@ class Uploader(Resource):
         return result
 
     def delete(self, uploader_id):
-        result = UploaderModel.query.filter_by(id = uploader_id).first()
+        result = UploaderModel.query.filter_by(uploader_id = uploader_id).first()
         if not result:
             abort(404, 'Uploader {} does not exist'.format(uploader_id))
         db.session.delete(result)
@@ -182,7 +182,7 @@ class Uploader(Resource):
 class Uploaders(Resource):
     @marshal_with(resource_fields_uploader)
     def get(self):
-        results = UploaderModel.order_by(UploaderModel.uploader_id).all()
+        results = UploaderModel.query.order_by(UploaderModel.uploader_id).all()
         return results, 200
 
     @marshal_with(resource_fields_uploader)
@@ -196,7 +196,7 @@ class Uploaders(Resource):
 class User(Resource):
     @marshal_with(resource_fields_user)
     def get(self, user_id):
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'.format(user_id))
         return result
@@ -204,7 +204,7 @@ class User(Resource):
     @marshal_with(resource_fields_user)
     def put(self, user_id):
         args = user_put_args.parse_args()
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'. format(user_id))
         if args['user_name']:
@@ -217,7 +217,7 @@ class User(Resource):
         return result
 
     def delete(self, user_id):
-        result = UserModel.query.filter_by(id = user_id).first()
+        result = UserModel.query.filter_by(user_id = user_id).first()
         if not result:
             abort(404, 'User {} does not exist'.format(user_id))
         db.session.delete(result)
@@ -227,7 +227,7 @@ class User(Resource):
 class Users(Resource):
     @marshal_with(resource_fields_user)
     def get(self):
-        results = UserModel.order_by(UserModel.user_id).all()
+        results = UserModel.query.order_by(UserModel.user_id).all()
         return results, 200
 
     @marshal_with(resource_fields_user)
