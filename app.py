@@ -1,14 +1,26 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
-from flask_httpauth import HTTPDigestAuth
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videodatabase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
-auth = HTTPDigestAuth()
+auth = HTTPBasicAuth()
+
+USER_DATA = {
+    "admin": "SecretPassword"
+}
+
+@auth.verify_password
+def verify(username, password):
+    if not username and password:
+        return False
+    return USER_DATA.get(username) == password
 
 class VideoModel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -101,6 +113,7 @@ resource_fields_user = {
 
 class Video(Resource):
     @marshal_with(resource_fields_video)
+    @auth.login_required
     def get(self, video_id):
         result = VideoModel.query.filter_by(id = video_id).first()
         if not result:
@@ -136,6 +149,7 @@ class Video(Resource):
 
 class Videos(Resource):
     @marshal_with(resource_fields_video)
+    @auth.login_required
     def get(self):
         results = VideoModel.query.order_by(VideoModel.id).all()
         return results, 200
